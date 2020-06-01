@@ -65,6 +65,9 @@ function renderProducts() {
     leftProduct = Product.all[randomNumber(0, Product.all.length - 1)];
     middleProduct = Product.all[randomNumber(0, Product.all.length - 1)];
     rightProduct = Product.all[randomNumber(0, Product.all.length - 1)];
+    if(leftProduct === middleProduct || middleProduct === rightProduct || rightProduct == leftProduct){
+        renderProducts();
+    }
     left.src = leftProduct.imgPath;
     left.alt = leftProduct.productName;
     middle.src = middleProduct.imgPath;
@@ -83,17 +86,18 @@ function onClick(event) {
             click++;
             if (event.target.id === 'left') {
                 leftProduct.clicks++;
-                leftProduct.unClicks++;
             }
         } if (event.target.id === 'middle') {
             middleProduct.clicks++;
-            middleProduct.unClicks++;
         } if (event.target.id === 'right') {
             rightProduct.clicks++;
-            rightProduct.unClicks++;
         }
+        leftProduct.unClicks++;
+        middleProduct.unClicks++;
+        rightProduct.unClicks++;
         renderProducts();
-    } else {
+    } else if(click === 25){
+        img.removeEventListener('click', onClick);
         renderSummary();
     }
 }
