@@ -26,7 +26,9 @@ var left = document.getElementById('left');
 var middle = document.getElementById('middle');
 var right = document.getElementById('right');
 var click = 0;
+var clickArr = [];
 var unClick = 0;
+var unClickArr = [];
 Product.all = [];
 function Product(product, format) {
     this.productName = product;
@@ -65,7 +67,7 @@ function renderProducts() {
     leftProduct = Product.all[randomNumber(0, Product.all.length - 1)];
     middleProduct = Product.all[randomNumber(0, Product.all.length - 1)];
     rightProduct = Product.all[randomNumber(0, Product.all.length - 1)];
-    if(leftProduct === middleProduct || middleProduct === rightProduct || rightProduct == leftProduct){
+    if (leftProduct === middleProduct || middleProduct === rightProduct || rightProduct === leftProduct) {
         renderProducts();
     }
     left.src = leftProduct.imgPath;
@@ -96,16 +98,21 @@ function onClick(event) {
         middleProduct.unClicks++;
         rightProduct.unClicks++;
         renderProducts();
-    } else if(click === 25){
+    } else if (click === 25) {
         img.removeEventListener('click', onClick);
+        dataOnChart();
         renderSummary();
     }
+    // clickArr.push(click);
+    // unClickArr.push(click);
+    // console.log(clickArr);
 }
 function renderSummary() {
     var h2El = document.getElementById('h2');
     var h2 = document.createElement('h2');
     h2.textContent = `Here is your vote:`;
     h2El.append(h2);
+    renderChart();
     var ulEl = document.getElementById('summary');
     for (var i = 0; i < Product.all.length; i++) {
         var li = document.createElement('li');
@@ -113,7 +120,46 @@ function renderSummary() {
         ulEl.append(li);
     }
 }
-
+var dataOnChart = function () { 
+    for (var i = 0; i < Product.all.length; i++){ 
+      clickArr.push(Product.all[i].clicks);
+      unClickArr.push(Product.all[i].unClicks); 
+    } 
+  }
+function renderChart() {
+    var chart = document.getElementById('voteChart').getContext('2d');
+    chart.canvas.height = '250';
+    chart.canvas.width = '800';
+    var voteChart = new Chart(chart, {
+        type: 'bar',
+        data: {
+            labels: product,
+            datasets: [{
+                label: "Shown Times",
+                backgroundColor: '#959393',
+                borderColor: '#959393',
+                data: unClickArr,
+            },
+            {
+                label: "Votes",
+                backgroundColor: '#0f0f0a',
+                borderColor: '#0f0f0a',
+                data: clickArr,
+            }]
+        },
+        options: {
+            scales: {
+                xAxes: [{
+                    stacked: true
+                }],
+                yAxes: [{
+                    stacked: true
+                }]
+            }
+        }
+    });
+}
+// renderChart();
 function randomNumber(min, max) {
     return Math.floor(Math.random() * (max - min + 1)) + min;
 }
