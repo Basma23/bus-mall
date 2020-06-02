@@ -136,13 +136,13 @@ function renderChart() {
             labels: product,
             datasets: [{
                 label: "Shown Times",
-                backgroundColor: '#959393',
+                backgroundColor: 'rgba(149, 147, 147, .5)',
                 borderColor: '#959393',
                 data: unClickArr,
             },
             {
                 label: "Votes",
-                backgroundColor: '#0f0f0a',
+                backgroundColor: 'rgba(15, 15, 10, .5)',
                 borderColor: '#0f0f0a',
                 data: clickArr,
             }]
@@ -160,6 +160,28 @@ function renderChart() {
     });
 }
 // renderChart();
+function storeProducts(){
+    var products = JSON.stringify(Product.all);
+    var shown = JSON.stringify(click);
+    var vote = JSON.stringify(unClick);
+    localStorage.setItem('Products', products);
+    localStorage.setItem('Shown', shown);
+    localStorage.setItem('Vote', vote);
+}
+storeProducts();
+function getProducts(){
+    var products = localStorage.getItem('Products');
+    var shown = localStorage.getItem('Shown');
+    var vote = localStorage.getItem('vote');
+    if(products || shown || vote){
+        Product.all = JSON.parse(products);
+        click = JSON.parse(shown);
+        unClick = JSON.parse(vote);
+        renderProducts();
+        onClick(event);
+        dataOnChart();
+    }
+}
 function randomNumber(min, max) {
     return Math.floor(Math.random() * (max - min + 1)) + min;
 }
