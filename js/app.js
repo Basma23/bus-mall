@@ -62,13 +62,37 @@ for (var i = 0; i < product.length; i++) {
     new Product(product[i]);
 }
 console.log(Product.all);
-var leftProduct, middleProduct, rightProduct;
+var leftProduct, middleProduct, rightProduct, previous3Imgs = [];
 function renderProducts() {
     leftProduct = Product.all[randomNumber(0, Product.all.length - 1)];
     middleProduct = Product.all[randomNumber(0, Product.all.length - 1)];
     rightProduct = Product.all[randomNumber(0, Product.all.length - 1)];
     if (leftProduct === middleProduct || middleProduct === rightProduct || rightProduct === leftProduct) {
         renderProducts();
+    }
+    if(previous3Imgs.includes(leftProduct)){
+        leftProduct = Product.all[randomNumber(0, Product.all.length - 1)];
+        while(leftProduct === middleProduct || leftProduct === rightProduct){
+            leftProduct = Product.all[randomNumber(0, Product.all.length - 1)];
+        }
+    }
+    if(previous3Imgs.includes(middleProduct)){
+        middleProduct = Product.all[randomNumber(0, Product.all.length - 1)];
+        while(middleProduct === leftProduct || middleProduct === rightProduct){
+            middleProduct = Product.all[randomNumber(0, Product.all.length - 1)];
+        }
+    }
+    if(previous3Imgs.includes(rightProduct)){
+        rightProduct = Product.all[randomNumber(0, Product.all.length - 1)];
+        while(rightProduct === middleProduct || rightProduct === leftProduct){
+            rightProduct = Product.all[randomNumber(0, Product.all.length - 1)];
+        }
+    }
+    previous3Imgs.push(leftProduct);
+    previous3Imgs.push(middleProduct);
+    previous3Imgs.push(rightProduct);
+    while(previous3Imgs.length > 3){
+        previous3Imgs.shift();
     }
     left.src = leftProduct.imgPath;
     left.alt = leftProduct.productName;
@@ -78,18 +102,16 @@ function renderProducts() {
     right.alt = rightProduct.productName;
 }
 renderProducts();
-img.addEventListener('click', onClick);
-// left.addEventListener('click', onClick);
-// middle.addEventListener('click',onClick);
-// right.addEventListener('click',onClick);
+left.addEventListener('click', onClick);
+middle.addEventListener('click', onClick);
+right.addEventListener('click', onClick);
 function onClick(event) {
     if (click < 25) {
-        if (event.target.id !== 'img') {
             click++;
             if (event.target.id === 'left') {
                 leftProduct.clicks++;
             }
-        } if (event.target.id === 'middle') {
+         if (event.target.id === 'middle') {
             middleProduct.clicks++;
         } if (event.target.id === 'right') {
             rightProduct.clicks++;
@@ -99,15 +121,14 @@ function onClick(event) {
         rightProduct.unClicks++;
         renderProducts();
     } else if (click === 25) {
-        img.removeEventListener('click', onClick);
+        click++;
         dataOnChart();
         renderSummary();
     }
-    // clickArr.push(click);
-    // unClickArr.push(click);
-    // console.log(clickArr);
 }
 function renderSummary() {
+    storeProducts();
+    // img.removeEventListener('click', onClick)
     var h2El = document.getElementById('h2');
     var h2 = document.createElement('h2');
     h2.textContent = `Here is your vote:`;
@@ -147,40 +168,32 @@ function renderChart() {
                 data: clickArr,
             }]
         },
-        options: {
-            scales: {
-                xAxes: [{
-                    stacked: true
-                }],
-                yAxes: [{
-                    stacked: true
-                }]
-            }
-        }
+        // options: {
+        //     scales: {
+        //         xAxes: [{
+        //             stacked: true
+        //         }],
+        //         yAxes: [{
+        //             stacked: true
+        //         }]
+        //     }
+        // }
     });
 }
 // renderChart();
 function storeProducts(){
     var products = JSON.stringify(Product.all);
-    var shown = JSON.stringify(click);
-    var vote = JSON.stringify(unClick);
+    // var shown = JSON.stringify(click);
+    // var vote = JSON.stringify(unClick);
     localStorage.setItem('Products', products);
-    localStorage.setItem('Shown', shown);
-    localStorage.setItem('Vote', vote);
+    // localStorage.setItem('Shown', shown);
+    // localStorage.setItem('Vote', vote);
 }
-storeProducts();
+// storeProducts();
 function getProducts(){
     var products = localStorage.getItem('Products');
-    var shown = localStorage.getItem('Shown');
-    var vote = localStorage.getItem('vote');
-    if(products || shown || vote){
         Product.all = JSON.parse(products);
-        click = JSON.parse(shown);
-        unClick = JSON.parse(vote);
-        renderProducts();
-        onClick(event);
-        dataOnChart();
-    }
+    
 }
 function randomNumber(min, max) {
     return Math.floor(Math.random() * (max - min + 1)) + min;
