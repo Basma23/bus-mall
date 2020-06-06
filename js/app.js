@@ -1,4 +1,5 @@
 'use strict'
+// list pruducts' names insid an arry
 var product = [
     "bag",
     "banana",
@@ -21,15 +22,16 @@ var product = [
     "water-can",
     "wine-glass"
 ];
-var sectionImg = document.getElementById('img');
-var left = document.getElementById('left');
-var middle = document.getElementById('middle');
-var right = document.getElementById('right');
-var click = 0;
-var clickArr = [];
-var unClick = 0;
-var unClickArr = [];
-Product.all = [];
+var sectionImg = document.getElementById('img'); // declare a variable to get an HTML element by its id
+var left = document.getElementById('left'); // declare a variable to get an HTML element by its id
+var middle = document.getElementById('middle'); // declare a variable to get an HTML element by its id
+var right = document.getElementById('right'); // declare a variable to get an HTML element by its id
+var click = 0; // declare a variable for counting the number of votes
+var clickArr = []; // declare an empty arry to set the number of votes in it
+var unClick = 0; // declare a variable for counting the number of views
+var unClickArr = []; // declare an empty arry to set the number of views in it
+Product.all = []; // an emty array for pushing the properties of the constractor
+// constractor for the common products' properties
 function Product(product, format) {
     this.productName = product;
     this.imgPath = format;
@@ -58,10 +60,13 @@ Product.all.push(
     new Product('water-can', 'img/water-can.jpg'),
     new Product('wine-glass', 'img/wine-glass.jpg')
 );
+// for loop for geting products
 for (var i = 0; i < product.length; i++) {
     new Product(product[i]);
 }
 console.log(Product.all);
+// declare a set of variables to get unique 3 imgs in each time the user will clicked on a product 
+// and to do two sub sequence for products
 var leftProduct, middleProduct, rightProduct, previous3Imgs = [];
 function renderProducts() {
     leftProduct = Product.all[randomNumber(0, Product.all.length - 1)];
@@ -102,6 +107,7 @@ function renderProducts() {
     right.alt = rightProduct.productName;
 }
 renderProducts();
+// function for even listner to count the number of votes and views
 left.addEventListener('click', onClick);
 middle.addEventListener('click', onClick);
 right.addEventListener('click', onClick);
@@ -126,6 +132,7 @@ function onClick(event) {
         renderSummary();
     }
 }
+// function to do a list on HTML for the result of the votes and views number for each project
 function renderSummary() {
     storeProducts();
     // img.removeEventListener('click', onClick)
@@ -141,12 +148,14 @@ function renderSummary() {
         ulEl.append(li);
     }
 }
+// function for getting the number of votes and views and pushing them to its arry
 var dataOnChart = function () { 
     for (var i = 0; i < Product.all.length; i++){ 
       clickArr.push(Product.all[i].clicks);
       unClickArr.push(Product.all[i].unClicks); 
     } 
   }
+//   function for the chart
 function renderChart() {
     var chart = document.getElementById('voteChart').getContext('2d');
     chart.canvas.height = '250';
@@ -181,20 +190,19 @@ function renderChart() {
     });
 }
 // renderChart();
+// function for storing the data of votes and views in local storage
 function storeProducts(){
     var products = JSON.stringify(Product.all);
-    // var shown = JSON.stringify(click);
-    // var vote = JSON.stringify(unClick);
     localStorage.setItem('Products', products);
-    // localStorage.setItem('Shown', shown);
-    // localStorage.setItem('Vote', vote);
 }
 // storeProducts();
+// function for getting the data of votes and views in local storage
 function getProducts(){
     var products = localStorage.getItem('Products');
         Product.all = JSON.parse(products);
     
 }
+// helper function
 function randomNumber(min, max) {
     return Math.floor(Math.random() * (max - min + 1)) + min;
 }
